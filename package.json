@@ -9,7 +9,13 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "cordova:android": "npx cordova build android --release",
+    "cordova:android:debug": "npx cordova build android",
+    "cordova:ios": "npx cordova build ios --release",
+    "cordova:ios:debug": "npx cordova build ios",
+    "cordova:prepare": "npx cordova prepare",
+    "cordova:requirements": "npx cordova requirements"
   },
   "private": true,
   "dependencies": {
@@ -17,6 +23,7 @@
     "@angular/common": "^20.0.0",
     "@angular/compiler": "^20.0.0",
     "@angular/core": "^20.0.0",
+    "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.0.0",
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
@@ -27,9 +34,13 @@
     "@capacitor/keyboard": "8.0.2",
     "@capacitor/status-bar": "8.0.2",
     "@ionic/angular": "^8.0.0",
+    "@ionic/storage-angular": "^4.0.0",
+    "firebase": "^11.10.0",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
+    "tailwindcss": "^3.4.19",
     "tslib": "^2.3.0",
+    "uuid": "^13.0.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
@@ -44,9 +55,22 @@
     "@angular/language-service": "^20.0.0",
     "@capacitor/cli": "8.3.0",
     "@ionic/angular-toolkit": "^12.0.0",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/jasmine": "~5.1.0",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
+    "autoprefixer": "^10.4.27",
+    "cordova": "^13.0.0",
+    "cordova-android": "^15.0.0",
+    "cordova-ios": "^8.0.1",
+    "cordova-plugin-badge": "^0.8.9",
+    "cordova-plugin-device": "^2.1.0",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-ionic-webview": "^5.0.1",
+    "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "cordova-plugin-splashscreen": "^6.0.2",
+    "cordova-plugin-statusbar": "^3.0.0",
     "eslint": "^9.16.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
@@ -58,7 +82,18 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "postcss": "^8.5.8",
     "typescript": "~5.9.0"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-local-notification": {}
+    }
+  }
 }
