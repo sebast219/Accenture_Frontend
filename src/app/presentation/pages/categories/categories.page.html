@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openCategoryModal()" fill="clear">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="px-4">
+    <ng-container *ngIf="categories$ | async as categories">
+      <!-- Empty State -->
+      <app-empty-state
+        *ngIf="categories.length === 0"
+        icon="folder-outline"
+        title="No hay categorías"
+        message="Crea categorías para organizar mejor tus tareas."
+        actionLabel="Nueva Categoría"
+      ></app-empty-state>
+
+      <!-- Categories Grid -->
+      <div *ngIf="categories.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div
+          *ngFor="let category of categories; trackBy: trackByCategoryId"
+          class="card-base p-4 animate-slide-up"
+        >
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-xl flex items-center justify-center"
+                [style.backgroundColor]="category.color + '20'"
+              >
+                <ion-icon
+                  [name]="category.icon || 'folder-outline'"
+                  class="text-xl"
+                  [style.color]="category.color"
+                ></ion-icon>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800 text-lg">{{ category.name }}</h3>
+                <p class="text-sm text-gray-500">
+                  {{ category.taskCount || 0 }} tarea{{ category.taskCount !== 1 ? 's' : '' }}
+                </p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <ion-button
+                (click)="editCategory(category)"
+                fill="clear"
+                size="small"
+                color="primary"
+              >
+                <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button
+                (click)="deleteCategory(category)"
+                fill="clear"
+                size="small"
+                color="danger"
+              >
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ion-content>
+
+<!-- Floating Action Button -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="openCategoryModal()" color="primary">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

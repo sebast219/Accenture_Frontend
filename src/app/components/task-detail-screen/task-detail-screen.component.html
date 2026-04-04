@@ -1,0 +1,477 @@
+<div class="mobile-frame pb-8">
+  <!-- Header -->
+  <div class="flex justify-between items-center px-5 py-4">
+    <ion-button fill="clear" (click)="onBack()" class="text-white">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    </ion-button>
+    <h2 class="text-white text-lg font-medium">
+      {{ isEditing ? 'Edit Task' : 'Task Details' }}
+    </h2>
+    <div class="flex items-center gap-3">
+      <!-- Edit Mode Actions -->
+      <div *ngIf="isEditing" class="flex gap-2">
+        <ion-button 
+          fill="solid" 
+          (click)="onSaveEdit()" 
+          class="bg-blue-500/90 text-white px-4 py-2 rounded-lg hover:bg-blue-500 active:scale-95 transition-all duration-200 text-sm"
+        >
+          Save
+        </ion-button>
+      </div>
+      <!-- Normal Mode Actions -->
+      <ion-button *ngIf="!isEditing" fill="clear" (click)="onEdit()" class="text-white hover:text-blue-400 transition-colors">
+        <div class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500/20 flex items-center justify-center transition-all">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+        </div>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Task Content -->
+  <div class="px-5 overflow-y-auto" style="height: calc(100vh - 120px) !important; overflow-y: auto !important;">
+    <!-- Task Title and Priority -->
+    <div class="mb-6">
+      <div class="flex items-start justify-between mb-3">
+        <!-- Title -->
+        <div class="flex-1 mr-4 flex items-center gap-3">
+          <!-- Task Complete Checkbox (only when no subtasks) -->
+          <input 
+            *ngIf="!isEditing && (!subtasks || subtasks.length === 0)"
+            type="checkbox"
+            [checked]="task?.completed"
+            (change)="toggleTaskComplete()"
+            class="custom-checkbox"
+          />
+          <h1 *ngIf="!isEditing" class="text-2xl font-semibold text-white flex-1 mr-4">{{ task?.title }}</h1>
+          <input 
+            *ngIf="isEditing"
+            [(ngModel)]="editedTask!.title"
+            type="text" 
+            class="text-2xl font-semibold text-white bg-gray-700 rounded-lg px-3 py-2 w-full"
+            placeholder="Task title"
+          />
+        </div>
+        <!-- Priority -->
+        <span *ngIf="!isEditing" class="px-3 py-1 rounded-full text-xs font-medium bg-white/80 text-[#1a1a1a]">
+          {{ task?.priority }}
+        </span>
+      </div>
+      <div class="flex items-center gap-4 text-gray-400 text-sm">
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span>{{ editedTask?.dueDate || task?.date }}</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{{ editedTask?.estimate || task?.estimate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-6 border-b border-gray-700 mb-6">
+      <button 
+        (click)="setActiveTab('overview')"
+        class="pb-3 text-sm font-medium transition-colors"
+        [class]="activeTab === 'overview' ? 'text-white border-b-2 border-white' : 'text-gray-400'"
+      >
+        Overview
+      </button>
+    </div>
+
+    <!-- Overview Tab -->
+    <div *ngIf="activeTab === 'overview'" class="space-y-6">
+      <!-- Priority (Editable) -->
+      <div *ngIf="isEditing" class="mb-6">
+        <label class="text-gray-400 text-sm mb-3 block">Priority</label>
+        <div class="flex gap-3">
+          <button
+            *ngFor="let p of priorities"
+            (click)="setPriority(p)"
+            class="priority-btn px-6 py-2 rounded-full text-sm font-medium transition-all duration-200"
+            [class]="getPriorityButtonClass(p)"
+          >
+            {{ p }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <label class="text-gray-400 text-sm">Progress</label>
+          <span class="text-gray-400 text-sm">{{ getTaskProgress() }}%</span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2">
+          <div 
+            class="bg-blue-400 h-2 rounded-full transition-all duration-300"
+            [style.width.%]="getTaskProgress()"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Category (View Mode) -->
+      <div *ngIf="!isEditing && task?.categoryId" class="mb-6">
+        <label class="text-gray-400 text-sm mb-2 block">Category</label>
+        <span 
+          class="px-3 py-2 rounded-full text-sm font-medium flex items-center gap-2 w-fit"
+          [style.background-color]="getCategoryById(task?.categoryId)?.color + '40'"
+          [style.color]="getCategoryById(task?.categoryId)?.color"
+        >
+          <span class="text-lg">{{ getCategoryById(task?.categoryId)?.icon }}</span>
+          <span>{{ getCategoryById(task?.categoryId)?.name }}</span>
+        </span>
+      </div>
+
+      <!-- Categories (Editable) -->
+      <div *ngIf="isEditing" class="mb-6">
+        <div class="flex justify-between items-center mb-3">
+          <label class="text-gray-400 text-sm">Category</label>
+          <button 
+            (click)="toggleCategoriesExpand()"
+            class="text-blue-400 text-sm font-medium"
+          >
+            {{ isCategoriesExpanded ? 'Show Less' : 'Show All' }}
+          </button>
+        </div>
+        <div 
+          class="grid gap-3 transition-all duration-300"
+          [class]="isCategoriesExpanded ? 'grid-cols-3' : 'grid-cols-3'"
+        >
+          <button
+            *ngFor="let category of categories; let i = index"
+            (click)="setCategory(category.id)"
+            class="category-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex flex-col items-center gap-2"
+            [class]="getCategoryButtonClass(category.id)"
+            [style]="getCategoryStyle(category.id)"
+            [hidden]="!isCategoriesExpanded && i >= 3"
+          >
+            <span class="text-lg">{{ category.icon }}</span>
+            <span>{{ category.name }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <h3 class="text-white font-medium mb-3">Description</h3>
+        <div class="text-gray-300 text-sm leading-relaxed">
+          <span *ngIf="!isEditing">{{ description }}</span>
+          <textarea 
+            *ngIf="isEditing"
+            [(ngModel)]="editedTask!.description"
+            class="bg-gray-700 rounded-xl p-3 text-white text-sm leading-relaxed resize-none w-full"
+            rows="4"
+            placeholder="Add description..."
+          ></textarea>
+          <button 
+            *ngIf="shouldShowReadMore"
+            (click)="toggleDescription()"
+            class="text-blue-400 ml-2"
+          >
+            Read more
+          </button>
+          <button 
+            *ngIf="shouldShowShowLess"
+            (click)="toggleDescription()"
+            class="text-blue-400 ml-2"
+          >
+            Show less
+          </button>
+        </div>
+      </div>
+
+      <!-- Subtasks -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-white font-medium">Subtasks</h3>
+          <button 
+            *ngIf="isEditing"
+            (click)="addSubtask()"
+            class="text-blue-400 text-sm font-medium"
+          >
+            + Add Subtask
+          </button>
+        </div>
+        <div class="space-y-3 max-h-64 overflow-y-auto">
+          <div 
+            *ngFor="let subtask of subtasks; let i = index"
+            class="flex items-center gap-3 p-3 bg-gray-800 rounded-xl"
+          >
+            <input 
+              type="checkbox"
+              [checked]="subtask.completed"
+              (change)="toggleSubtask(subtask.id)"
+              class="custom-checkbox"
+            />
+            <span 
+              *ngIf="!isEditing"
+              class="text-sm flex-1"
+              [class]="subtask.completed ? 'text-gray-500 line-through' : 'text-white'"
+            >
+              {{ subtask.title }}
+            </span>
+            <input 
+              *ngIf="isEditing"
+              [(ngModel)]="subtask.title"
+              type="text"
+              class="text-sm flex-1 bg-gray-700 rounded px-2 py-1 text-white"
+              placeholder="Subtask name"
+            />
+            <button 
+              *ngIf="isEditing"
+              (click)="removeSubtask(subtask.id)"
+              class="text-red-400 hover:text-red-300 transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Due Date -->
+      <div *ngIf="isEditing" class="mb-6">
+        <label class="text-gray-400 text-sm mb-2 block">Due Date</label>
+        <div 
+          (click)="showDatePicker()"
+          class="flex items-center gap-3 bg-gray-800 rounded-xl px-4 py-3 cursor-pointer hover:bg-gray-700 transition-colors group"
+        >
+          <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-white font-medium">
+              {{ editedTask?.dueDate || 'Select a date' }}
+            </div>
+            <div class="text-gray-500 text-xs" *ngIf="editedTask?.dueDate">
+              Due date set
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-gray-500 group-hover:text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Time Estimate -->
+      <div *ngIf="isEditing" class="mb-6">
+        <label class="text-gray-400 text-sm mb-2 block">Time Estimate</label>
+        <div 
+          (click)="showTimePicker()"
+          class="flex items-center gap-3 bg-gray-800 rounded-xl px-4 py-3 cursor-pointer hover:bg-gray-700 transition-colors group"
+        >
+          <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-white font-medium">
+              {{ editedTask?.estimate || 'Set time estimate' }}
+            </div>
+            <div class="text-gray-500 text-xs" *ngIf="editedTask?.estimate">
+              Estimated duration
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-gray-500 group-hover:text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Additional Fields (only in edit mode) -->
+      <div *ngIf="isEditing" class="space-y-4">
+        <!-- Members -->
+        <div>
+          <div class="flex flex-wrap gap-3">
+            <div 
+              *ngFor="let member of selectedMembers"
+              class="flex items-center gap-2 bg-gray-800 rounded-full px-3 py-2"
+            >
+              <span class="text-white text-sm">{{ member.name }}</span>
+              <button 
+                (click)="removeMember(member.id)"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date Picker Modal -->
+  <div *ngIf="isDatePickerVisible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; background-color: rgba(0, 0, 0, 0.5) !important; z-index: 9999 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 1rem !important;">
+    <div class="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4" style="background: #374151 !important; border-radius: 1rem !important; padding: 1.5rem !important; max-width: 400px !important; width: 100% !important; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2) !important;">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-white text-lg font-medium">Select Date</h3>
+        <ion-button fill="clear" (click)="hideDatePicker()" class="text-gray-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </ion-button>
+      </div>
+
+      <!-- Calendar -->
+      <div class="bg-gray-900 rounded-xl p-4 mb-4" style="background: #1F2937 !important; border-radius: 0.75rem !important; padding: 1rem !important;">
+        <!-- Month Navigation -->
+        <div class="flex justify-between items-center mb-4">
+          <button 
+            (click)="previousMonth()"
+            class="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div class="text-white font-medium">
+            {{ selectedDate | date:'MMMM yyyy' }}
+          </div>
+          <button 
+            (click)="nextMonth()"
+            class="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-7 gap-1 text-center mb-4" style="display: grid !important; grid-template-columns: repeat(7, 1fr) !important; gap: 0.25rem !important; text-align: center !important; margin-bottom: 1rem !important;">
+          <div class="text-gray-400 text-xs">Sun</div>
+          <div class="text-gray-400 text-xs">Mon</div>
+          <div class="text-gray-400 text-xs">Tue</div>
+          <div class="text-gray-400 text-xs">Wed</div>
+          <div class="text-gray-400 text-xs">Thu</div>
+          <div class="text-gray-400 text-xs">Fri</div>
+          <div class="text-gray-400 text-xs">Sat</div>
+        </div>
+        
+        <!-- Calendar Days -->
+        <div class="grid grid-cols-7 gap-1" style="display: grid !important; grid-template-columns: repeat(7, 1fr) !important; gap: 0.25rem !important;">
+          <div 
+            *ngFor="let date of calendarDays; let i = index"
+            (click)="selectCalendarDate(date)"
+            class="p-2 rounded-lg cursor-pointer transition-all duration-200"
+            [class]="isDateSelected(date) ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'"
+            style="padding: 0.5rem !important; border-radius: 0.5rem !important; cursor: pointer !important; transition: all 0.2s ease !important;"
+          >
+            {{ date.day }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Date Display -->
+      <div class="text-center mb-4">
+        <div class="text-white text-lg font-medium">
+          {{ selectedDate | date:'longDate' }}
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3">
+        <ion-button 
+          fill="clear" 
+          (click)="hideDatePicker()"
+          class="flex-1 text-gray-400 border border-gray-600 py-3 rounded-xl text-center justify-center"
+        >
+          Cancel
+        </ion-button>
+        <ion-button 
+          fill="solid" 
+          (click)="onDateSelected(selectedDate)"
+          class="flex-1 bg-blue-500 text-white py-3 rounded-xl text-center justify-center"
+        >
+          Select
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Picker Modal -->
+  <div *ngIf="isTimePickerVisible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; background-color: rgba(0, 0, 0, 0.5) !important; z-index: 9999 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 1rem !important;">
+    <div class="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4" style="background: #374151 !important; border-radius: 1rem !important; padding: 1.5rem !important; max-width: 400px !important; width: 100% !important; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2) !important;">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-white text-lg font-medium">Select Time</h3>
+        <ion-button fill="clear" (click)="hideTimePicker()" class="text-gray-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </ion-button>
+      </div>
+
+      <!-- Selected Time Display -->
+      <div class="text-center mb-6">
+        <div class="text-white text-4xl font-mono font-bold tracking-wider">
+          {{ selectedHours.toString().padStart(2, '0') }}:{{ selectedMinutes.toString().padStart(2, '0') }}
+        </div>
+      </div>
+
+      <!-- Hours -->
+      <div class="mb-4">
+        <label class="text-gray-400 text-xs mb-2 block">Hours (0-23)</label>
+        <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto">
+          <button
+            *ngFor="let hour of hoursList"
+            (click)="selectHour(hour)"
+            class="px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+            [class]="selectedHours === hour ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'"
+          >
+            {{ hour.toString().padStart(2, '0') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Minutes -->
+      <div class="mb-6">
+        <label class="text-gray-400 text-xs mb-2 block">Minutes (0-59)</label>
+        <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto">
+          <button
+            *ngFor="let minute of minutesList"
+            (click)="selectMinute(minute)"
+            class="px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+            [class]="selectedMinutes === minute ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'"
+          >
+            {{ minute.toString().padStart(2, '0') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3">
+        <ion-button 
+          fill="clear" 
+          (click)="hideTimePicker()"
+          class="flex-1 text-gray-400 border border-gray-600 py-3 rounded-xl text-center justify-center"
+        >
+          Cancel
+        </ion-button>
+        <ion-button 
+          fill="solid" 
+          (click)="onTimeSelected()"
+          class="flex-1 bg-blue-500 text-white py-3 rounded-xl text-center justify-center"
+        >
+          Select
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</div>

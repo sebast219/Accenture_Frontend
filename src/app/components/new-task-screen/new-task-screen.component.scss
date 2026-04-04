@@ -1,0 +1,79 @@
+// Mobile frame styling
+.mobile-frame {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: #1a1a1a;
+  overflow-x: hidden;
+}
+
+// Transparent scrollbar styling
+.overflow-y-auto::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+.overflow-y-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+// Input styling
+.dark-input {
+  background: #2a2a2a;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  color: white;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.dark-input:focus {
+  background: #333;
+}
+
+.dark-input::placeholder {
+  color: #666;
+}
+
+// Priority buttons
+.priority-btn {
+  background: #2a2a2a;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.priority-btn.active {
+  background: #a8d5ff;
+  color: #1a1a1a;
+}
+
+// Center text in ion-buttons
+ion-button {
+  text-align: center;
+  
+  &::part(native) {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .button-native {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+// Alternative centering for modal buttons
+ion-button.flex-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  &::part(native) {
+    justify-content: center;
+    width: 100%;
+  }
+}
