@@ -24,6 +24,10 @@ export class CategoriesScreenComponent implements OnInit {
   isDeleteModalVisible = false;
   categoryToDelete: Category | null = null;
   
+  // Success message toast
+  successMessage = '';
+  isSuccessVisible = false;
+  
   // Form data
   categoryName = '';
   categoryColor = '#3b82f6';
@@ -55,6 +59,7 @@ export class CategoriesScreenComponent implements OnInit {
         icon: this.categoryIcon
       });
       
+      this.showSuccessMessage(`Category "${this.categoryName}" added successfully!`);
       this.resetForm();
       this.loadCategories();
     }
@@ -142,5 +147,17 @@ export class CategoriesScreenComponent implements OnInit {
 
   onBack() {
     this.back.emit();
+  }
+
+  // Show success toast message
+  showSuccessMessage(message: string): void {
+    this.successMessage = message;
+    this.isSuccessVisible = true;
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      this.isSuccessVisible = false;
+      this.successMessage = '';
+    }, 3000);
   }
 }

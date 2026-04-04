@@ -53,17 +53,19 @@
         actionLabel="Nueva Tarea"
       ></app-empty-state>
 
-      <!-- Tasks -->
+      <!-- Tasks with Virtual Scroll for performance -->
       <div *ngIf="tasks.length > 0">
-        <app-task-item
-          *ngFor="let task of tasks; trackBy: trackByTaskId"
-          [task]="task"
-          [showPriority]="isFeatureEnabled('enableTaskPriority')"
-          [showDescription]="isFeatureEnabled('enableTaskDescription')"
-          (toggleComplete)="onToggleComplete($event)"
-          (deleteTask)="onDeleteTask($event)"
-          (editTask)="onEditTask($event)"
-        ></app-task-item>
+        <ion-virtual-scroll [items]="tasks" approxItemHeight="80px">
+          <app-task-item
+            *virtualItem="let task"
+            [task]="task"
+            [showPriority]="isFeatureEnabled('enableTaskPriority')"
+            [showDescription]="isFeatureEnabled('enableTaskDescription')"
+            (toggleComplete)="onToggleComplete($event)"
+            (deleteTask)="onDeleteTask($event)"
+            (editTask)="onEditTask($event)"
+          ></app-task-item>
+        </ion-virtual-scroll>
       </div>
     </ng-container>
   </div>
