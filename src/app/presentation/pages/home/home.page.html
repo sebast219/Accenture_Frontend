@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis Tareas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openTaskModal()" fill="clear">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Task Stats -->
+  <app-task-stats *ngIf="isFeatureEnabled('enableTaskStats')"></app-task-stats>
+
+  <!-- Search and Filters -->
+  <div class="px-4 pb-4">
+    <!-- Search Bar -->
+    <ion-searchbar
+      (ionInput)="onSearchChange($event)"
+      placeholder="Buscar tareas..."
+      animated="true"
+      class="mb-4"
+    ></ion-searchbar>
+
+    <!-- Category Filter -->
+    <app-category-filter
+      [categories]="(categories$ | async) || []"
+      [selectedCategoryId]="selectedCategoryId"
+      (categorySelected)="onCategorySelected($event)"
+    ></app-category-filter>
+
+    <!-- Toggle Completed -->
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-sm font-medium text-gray-700">Mostrar completadas</span>
+      <ion-toggle
+        [(ngModel)]="showCompleted"
+        (ionChange)="toggleShowCompleted()"
+        color="primary"
+      ></ion-toggle>
+    </div>
+  </div>
+
+  <!-- Tasks List -->
+  <div class="px-4">
+    <ng-container *ngIf="filteredTasks$ | async as tasks">
+      <!-- Empty State -->
+      <app-empty-state
+        *ngIf="tasks.length === 0"
+        icon="clipboard-outline"
+        title="No hay tareas"
+        [message]="searchTerm ? 'No se encontraron tareas con ese término de búsqueda.' : 'Comienza agregando tu primera tarea.'"
+        actionLabel="Nueva Tarea"
+      ></app-empty-state>
+
+      <!-- Tasks -->
+      <div *ngIf="tasks.length > 0">
+        <app-task-item
+          *ngFor="let task of tasks; trackBy: trackByTaskId"
+          [task]="task"
+          [showPriority]="isFeatureEnabled('enableTaskPriority')"
+          [showDescription]="isFeatureEnabled('enableTaskDescription')"
+          (toggleComplete)="onToggleComplete($event)"
+          (deleteTask)="onDeleteTask($event)"
+          (editTask)="onEditTask($event)"
+        ></app-task-item>
+      </div>
+    </ng-container>
+  </div>
+</ion-content>
+
+<!-- Floating Action Button -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="openTaskModal()" color="primary">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

@@ -1,0 +1,59 @@
+// Mobile frame styling
+.mobile-frame {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: #1a1a1a;
+  overflow-x: hidden;
+}
+
+//* Home Screen Styles */
+
+// Transparent scrollbar styling
+.overflow-y-auto::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+.overflow-y-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.task-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-card:active {
+  transform: scale(0.98);
+}
+
+.completed-task {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+// Calendar day styling
+.calendar-day {
+  transition: all 0.2s ease;
+}
+
+.calendar-day.active {
+  background: white;
+  color: #1a1a1a;
+}
+
+// Add button gradient
+.add-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+// Scale animation for active state
+.active\:scale-98:active {
+  transform: scale(0.98);
+}
+
+.active\:scale-95:active {
+  transform: scale(0.95);
+}
