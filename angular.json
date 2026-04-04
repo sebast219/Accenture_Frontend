@@ -37,7 +37,7 @@
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
             "scripts": [],
-            "browser": "src/main.ts"
+            "ssr": false
           },
           "configurations": {
             "production": {
@@ -68,7 +68,6 @@
               "namedChunks": true
             },
             "ci": {
-              "progress": false
             }
           },
           "defaultConfiguration": "production"
@@ -83,7 +82,7 @@
               "buildTarget": "app:build:development"
             },
             "ci": {
-              "progress": false
+              "buildTarget": "app:build:production"
             }
           },
           "defaultConfiguration": "development"
@@ -91,7 +90,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "app:build"
+            "buildTarget": "app:build:production"
           }
         },
         "test": {
@@ -129,7 +128,10 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@ionic/angular-toolkit"]
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ],
+    "analytics": "64aa3c73-1a16-4e25-9609-a925f5e29a69"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

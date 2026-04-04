@@ -1,0 +1,103 @@
+<ion-item-sliding #slidingItem>
+  <!-- Slide Options Left -->
+  <ion-item-options side="start">
+    <ion-item-option color="success" (click)="onToggleComplete(); slidingItem.close()">
+      <ion-icon
+        slot="icon-only"
+        [name]="task.completed ? 'close-circle-outline' : 'checkmark-circle-outline'"
+      ></ion-icon>
+    </ion-item-option>
+  </ion-item-options>
+
+  <!-- Main Content -->
+  <ion-item lines="none" class="task-item-wrapper" [class.task-completed]="task.completed">
+    <div class="w-full py-3">
+      <div class="card-base" [class.opacity-60]="task.completed">
+        <div class="flex items-start gap-3">
+          <!-- Checkbox -->
+          <button
+            (click)="onToggleComplete()"
+            class="flex-shrink-0 mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200"
+            [ngClass]="{
+              'border-success-500 bg-success-500': task.completed,
+              'border-gray-300 hover:border-primary-400': !task.completed
+            }"
+          >
+            <ion-icon
+              *ngIf="task.completed"
+              name="checkmark"
+              class="text-white text-sm"
+            ></ion-icon>
+          </button>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <h3
+                class="text-base font-semibold truncate transition-all duration-200"
+                [ngClass]="{
+                  'line-through text-gray-400': task.completed,
+                  'text-gray-800': !task.completed
+                }"
+              >
+                {{ task.title }}
+              </h3>
+            </div>
+
+            <!-- Description -->
+            <p
+              *ngIf="showDescription && task.description"
+              class="text-sm text-gray-400 mb-2 line-clamp-2"
+              [class.line-through]="task.completed"
+            >
+              {{ task.description }}
+            </p>
+
+            <!-- Meta Info -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Category Badge -->
+              <span
+                *ngIf="task.categoryName"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+              >
+                <span
+                  class="w-2 h-2 rounded-full"
+                  [style.backgroundColor]="task.categoryColor || '#94a3b8'"
+                ></span>
+                {{ task.categoryName }}
+              </span>
+
+              <!-- Priority Badge -->
+              <span
+                *ngIf="showPriority && task.priority"
+                [ngClass]="getPriorityClass(task.priority)"
+              >
+                {{ getPriorityLabel(task.priority) }}
+              </span>
+
+              <!-- Time -->
+              <span class="text-xs text-gray-400">
+                {{ getTimeAgo(task.createdAt) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Edit Button -->
+          <button
+            (click)="onEdit()"
+            class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200"
+          >
+            <ion-icon name="create-outline" class="text-lg"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ion-item>
+
+  <!-- Slide Options Right -->
+  <ion-item-options side="end">
+    <ion-item-option color="danger" (click)="onDelete(); slidingItem.close()">
+      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+    </ion-item-option>
+  </ion-item-options>
+</ion-item-sliding>
