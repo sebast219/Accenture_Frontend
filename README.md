@@ -177,7 +177,7 @@ todo-app/
 - **Testing**: Karma + Jasmine
 - **Container**: Docker + Docker Compose
 
-## Preguntas Técnicas
+## Preguntas 
 
 ### 1. ¿Por qué se usa ChangeDetectionStrategy.OnPush?
 
