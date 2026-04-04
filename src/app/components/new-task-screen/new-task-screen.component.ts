@@ -43,7 +43,7 @@ export class NewTaskScreenComponent {
   selectedHours = 0;
   selectedMinutes = 0;
   hoursList: number[] = Array.from({ length: 24 }, (_, i) => i);
-  minutesList: number[] = Array.from({ length: 61 }, (_, i) => i);
+  minutesList: number[] = Array.from({ length: 60 }, (_, i) => i);
 
   constructor(private categoryService: CategoryService) {
     // Initialize with one default subtask
@@ -273,6 +273,13 @@ export class NewTaskScreenComponent {
 
   isDateSelected(date: { day: string; date: number }): boolean {
     return date.date === this.selectedDate.getDate() && date.date > 0;
+  }
+
+  changeMonth(delta: number): void {
+    const newDate = new Date(this.selectedDate);
+    newDate.setMonth(newDate.getMonth() + delta);
+    this.selectedDate = newDate;
+    this.generateCalendarDays();
   }
 
   formatDate(date: Date): string {

@@ -50,3 +50,30 @@
   background: #a8d5ff;
   color: #1a1a1a;
 }
+
+// Center text in ion-buttons
+ion-button {
+  text-align: center;
+  
+  &::part(native) {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .button-native {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+// Alternative centering for modal buttons
+ion-button.flex-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  &::part(native) {
+    justify-content: center;
+    width: 100%;
+  }
+}
