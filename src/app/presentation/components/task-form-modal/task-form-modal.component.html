@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isEditMode ? 'Editar Tarea' : 'Nueva Tarea' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()" fill="clear">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="onSave()">
+    <!-- Title -->
+    <div class="mb-4">
+      <ion-label position="stacked" class="block text-sm font-medium text-gray-700 mb-2">
+        Título *
+      </ion-label>
+      <ion-input
+        [(ngModel)]="formData.title"
+        name="title"
+        type="text"
+        placeholder="Ingrese el título de la tarea"
+        class="input-field"
+        required
+      ></ion-input>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-4">
+      <ion-label position="stacked" class="block text-sm font-medium text-gray-700 mb-2">
+        Descripción
+      </ion-label>
+      <ion-textarea
+        [(ngModel)]="formData.description"
+        name="description"
+        placeholder="Agregue una descripción (opcional)"
+        rows="4"
+        class="input-field"
+      ></ion-textarea>
+    </div>
+
+    <!-- Category -->
+    <div class="mb-4">
+      <ion-label position="stacked" class="block text-sm font-medium text-gray-700 mb-2">
+        Categoría
+      </ion-label>
+      <ion-select
+        [(ngModel)]="formData.categoryId"
+        name="categoryId"
+        placeholder="Seleccionar categoría"
+        interface="popover"
+        class="input-field"
+      >
+        <ion-select-option value="">Sin categoría</ion-select-option>
+        <ion-select-option
+          *ngFor="let category of categories"
+          [value]="category.id"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="w-3 h-3 rounded-full"
+              [style.backgroundColor]="category.color"
+            ></span>
+            {{ category.name }}
+          </div>
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <!-- Priority -->
+    <div class="mb-6">
+      <ion-label position="stacked" class="block text-sm font-medium text-gray-700 mb-2">
+        Prioridad
+      </ion-label>
+      <ion-segment
+        [(ngModel)]="formData.priority"
+        name="priority"
+        class="w-full"
+      >
+        <ion-segment-button value="low">
+          <ion-label>Baja</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="medium">
+          <ion-label>Media</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="high">
+          <ion-label>Alta</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3">
+      <ion-button
+        type="button"
+        (click)="onCancel()"
+        fill="outline"
+        expand="block"
+        class="flex-1"
+      >
+        Cancelar
+      </ion-button>
+      <ion-button
+        type="submit"
+        [disabled]="!formData.title.trim()"
+        expand="block"
+        class="flex-1"
+      >
+        {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>
