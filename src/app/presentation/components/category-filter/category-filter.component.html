@@ -1,0 +1,31 @@
+<div class="mb-4 animate-fade-in">
+  <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    <!-- All Filter -->
+    <button
+      (click)="selectCategory(null)"
+      [ngClass]="selectedCategoryId === null ? 'chip-active' : 'chip-inactive'"
+      class="whitespace-nowrap flex-shrink-0"
+    >
+      <ion-icon name="apps-outline" class="text-sm"></ion-icon>
+      <span>Todas</span>
+    </button>
+
+    <!-- Category Filters -->
+    <button
+      *ngFor="let category of categories; trackBy: trackByFn"
+      (click)="selectCategory(category.id)"
+      [ngClass]="selectedCategoryId === category.id ? 'chip-active' : 'chip-inactive'"
+      class="whitespace-nowrap flex-shrink-0"
+    >
+      <span
+        class="w-2.5 h-2.5 rounded-full flex-shrink-0"
+        [style.backgroundColor]="category.color"
+      ></span>
+      <span>{{ category.name }}</span>
+      <span
+        *ngIf="category.taskCount !== undefined"
+        class="text-xs opacity-70"
+      >({{ category.taskCount }})</span>
+    </button>
+  </div>
+</div>
