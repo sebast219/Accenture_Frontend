@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.accenture.todoapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.accenture.todoapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Todo App</name>
     <description>Aplicación de lista de tareas desarrollada con Ionic Angular</description>
     <author email="dev@accenture.com" href="https://accenture.com">Accenture Dev Team</author>
@@ -11,8 +11,6 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    
-    <!-- Preferences -->
     <preference name="ScrollEnabled" value="false" />
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="36" />
@@ -27,19 +25,15 @@
     <preference name="Orientation" value="portrait" />
     <preference name="StatusBarStyle" value="default" />
     <preference name="KeyboardResizeMode" value="native" />
-    
-    <!-- Android Permissions -->
     <platform name="android">
         <allow-intent href="market:*" />
         <preference name="AndroidXEnabled" value="true" />
         <preference name="GradlePluginKotlinEnabled" value="true" />
-        <config-file parent="/manifest" target="AndroidManifest.xml">
+        <config-file parent="/manifest" target="AndroidManifest.xml" xmlns:android="http://schemas.android.com/apk/res/android">
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
         </config-file>
     </platform>
-    
-    <!-- iOS Configuration -->
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
@@ -52,12 +46,9 @@
         </feature>
         <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
     </platform>
-    
-    <!-- Plugins -->
     <plugin name="cordova-plugin-ionic-webview" spec="^5.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.2.0" />
     <plugin name="cordova-plugin-device" spec="^2.1.0" />
     <plugin name="cordova-plugin-statusbar" spec="^3.0.0" />
     <plugin name="cordova-plugin-splashscreen" spec="^6.0.2" />
-    <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.2" />
 </widget>
